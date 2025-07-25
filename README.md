@@ -51,8 +51,3 @@ sudo npm install
 node app.js
 ```
 
-## 📞 Contact
-- EMAIL: mindrilavasilevalentin@gmail.com
-- STEAM: https://steamcommunity.com/id/valymnd/
-- INSTAGRAM: https://www.instagram.com/valymnd/
-- Linkedin: https://www.linkedin.com/in/m%C3%AEndril%C4%83-vasile-49a989321
