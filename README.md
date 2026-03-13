@@ -1,17 +1,17 @@
 # MNDCode
 **Learn Programming the Smart Way!**  
 
-## 🚀 Introduction  
+## Introduction  
 **MNDCode** is an interactive platform designed to teach programming concepts `step by step`. Whether you're a beginner or looking to polish your skills, **MNDCode** provides engaging lessons and practical exercises.
 
-## 👨‍💻 Perfect for
+## Perfect for
 
 - Absolute beginners starting their coding journey
 - Intermediate learners who want to reinforce fundamentals
 - Teachers looking for interactive tools to engage students
 - Anyone who enjoys learning by building
 
-## 👀 Preview
+## Preview
 **Home**    
 
 ![Home](./MD_Assets/Home.png)    
@@ -36,7 +36,7 @@
 
 ![Contact](./MD_Assets/Contact.png)
 
-## ⚙️ Installation  
+## Installation  
 **Clone the repo**  
 ```bash
 git clone https://github.com/ValyMnDul/MNDCode.git
@@ -51,7 +51,7 @@ sudo npm install
 node app.js
 ```
 
-## 📤 Contributing
+## Contributing
 
 Pull requests are welcome! If you'd like to contribute or suggest features, feel free to open an issue or fork the repo.
 
