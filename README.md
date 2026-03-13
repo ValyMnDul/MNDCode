@@ -32,9 +32,6 @@
 
 ![SearchMetods](./MD_Assets/search.png)
 
-**Contact**
-
-![Contact](./MD_Assets/Contact.png)
 
 ## Installation  
 **Clone the repo**  
