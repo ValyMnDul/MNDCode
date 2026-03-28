@@ -2,16 +2,25 @@
   "name": "mndcode",
   "version": "1.0.0",
   "description": "**Learn Programming the Smart Way!**",
-  "main": "index.js",
+  "main": "app.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^17.3.1",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "lodash": "^4.17.21",
     "pg": "^8.16.0"
+  },
+  "optionalDependencies": {
+    "node-fetch": "^2.7.0"
   }
 }

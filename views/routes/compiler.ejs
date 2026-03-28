@@ -10,26 +10,42 @@
         </header>
         
         <main>
-            <h1>C++ Online Compiler</h1>
-                <div id="container">
-                <textarea id="code" class="card">
-#include <iostream> 
+            <h1>Online Compiler</h1>
+            
+            <div id="toolbar">
+                <div class="language-selector">
+                    <label for="language">Language:</label>
+                    <select id="language">
+                        <option value="cpp">C++</option>
+                        <option value="c">C</option>
+                        <option value="python">Python</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="java">Java</option>
+                        <option value="php">PHP</option>
+                        <option value="cs">C#</option>
+                        <option value="go">Go</option>
+                    </select>
+                </div>
+                <button id="runBtn" onclick="runCode()">Run</button>
+            </div>
+
+            <div id="container">
+                <div class="editor-section">
+                    <label>Code</label>
+                    <textarea id="code" class="card">#include <iostream> 
 using namespace std;
 int main()
 {
-    cout<<"Hello world!\n";
+    cout << "Hello world!" << endl;
     return 0;
-}
-                </textarea>
-                <textarea id="output" class="card" readonly>
+}</textarea>
+                </div>
 
-                </textarea>
-
-                <br>
+                <div class="editor-section">
+                    <label>Output</label>
+                    <textarea id="output" class="card" readonly></textarea>
+                </div>
             </div>
-            <div id="controller">
-                <button id="runBtn" onclick="runCode()">Run</button>   
-            </div>                   
         </main>
 
         <script src="/js/routes/compiler.js"></script>
