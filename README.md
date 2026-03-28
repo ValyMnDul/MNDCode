@@ -33,23 +33,12 @@
 ![SearchMetods](./MD_Assets/search.png)
 
 
-## Installation  
-**Clone the repo**  
-```bash
-git clone https://github.com/ValyMnDul/MNDCode.git
-cd MNDCode
-```
-**Install the dependencies**
-```bash
-sudo npm install
-```
-**Run the app**
-```bash
-node app.js
-```
-
 ## Contributing
 
 Pull requests are welcome! If you'd like to contribute or suggest features, feel free to open an issue or fork the repo.
 
----
+## Open Sorce
+
+MNDCode is under [MIT LICENCE](https://github.com/valymndul/mndcode/blob/main/LICENSE.md)
+
+### Project made in California for Neighgorhood event, hosted by HackClub
