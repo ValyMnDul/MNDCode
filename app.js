@@ -100,8 +100,21 @@ const languageMap = {
 // Funcción para compilar con Judge0
 async function compileWithJudge0(code, language_id, stdin) {
     const apiKey = process.env.JUDGE0_API_KEY;
+    const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
     
-    // Si no hay API key, intenta versión gratuita
+    // Si estamos en Vercel, solo usar Judge0 API (no hay gcc/g++)
+    if (isVercel) {
+        console.log('[Judge0] Ejecutando en Vercel - usando solo API...');
+        if (!apiKey || apiKey === 'demo') {
+            console.log('[Judge0] Intentando versión gratuita (free.judge0.com)...');
+            return await compileWithFreeJudge0(code, language_id, stdin);
+        } else {
+            console.log('[Judge0] Usando RapidAPI versión...');
+            return await compileWithRapidAPIJudge0(code, language_id, stdin, apiKey);
+        }
+    }
+    
+    // En local, intenta versión gratuita primero
     if (!apiKey || apiKey === 'demo') {
         console.log('[Judge0] Intentando versión gratuita (free.judge0.com)...');
         try {
@@ -118,12 +131,12 @@ async function compileWithJudge0(code, language_id, stdin) {
     return await compileWithRapidAPIJudge0(code, language_id, stdin, apiKey);
 }
 
-// Compilador local educacional (fallback)
+// Compilador local educacional (fallback) - solo en local, no en Vercel
 async function compileWithLocalInterpreter(code, language_id, stdin) {
-    const { exec } = require('child_process');
+    const { exec, execSync } = require('child_process');
     const fs = require('fs');
     const path = require('path');
-    const tmpDir = '/tmp';
+    const tmpDir = process.env.TMPDIR || process.env.TMP || '/tmp';
 
     try {
         console.log('[Local] Compilando localmente...');
@@ -132,45 +145,58 @@ async function compileWithLocalInterpreter(code, language_id, stdin) {
         let fileName = '';
         let fileExt = '';
         let binaryName = '';
+        let toolCheck = ''; // Para verificar si la herramienta existe
 
         // Mapear language_id a comandos
         switch(language_id) {
             case 71: // Python
+                toolCheck = 'python3 --version';
                 fileExt = '.py';
                 fileName = path.join(tmpDir, `code_${Date.now()}${fileExt}`);
                 fs.writeFileSync(fileName, code);
-                command = `python3 ${fileName}`;
+                command = `python3 "${fileName}"`;
                 break;
                 
             case 63: // JavaScript
+                toolCheck = 'node --version';
                 fileExt = '.js';
                 fileName = path.join(tmpDir, `code_${Date.now()}${fileExt}`);
                 fs.writeFileSync(fileName, code);
-                command = `node ${fileName}`;
+                command = `node "${fileName}"`;
                 break;
                 
             case 54: // C++
+                toolCheck = 'g++ --version';
                 fileExt = '.cpp';
                 fileName = path.join(tmpDir, `code_${Date.now()}${fileExt}`);
                 binaryName = path.join(tmpDir, `binary_${Date.now()}`);
                 fs.writeFileSync(fileName, code);
-                command = `g++ ${fileName} -o ${binaryName} && timeout 5 ${binaryName}`;
+                command = `g++ "${fileName}" -o "${binaryName}" && timeout 5 "${binaryName}"`;
                 break;
                 
             case 45: // C
+                toolCheck = 'gcc --version';
                 fileExt = '.c';
                 fileName = path.join(tmpDir, `code_${Date.now()}${fileExt}`);
                 binaryName = path.join(tmpDir, `binary_${Date.now()}`);
                 fs.writeFileSync(fileName, code);
-                command = `gcc ${fileName} -o ${binaryName} && timeout 5 ${binaryName}`;
+                command = `gcc "${fileName}" -o "${binaryName}" && timeout 5 "${binaryName}"`;
                 break;
                 
             default:
                 throw new Error(`Lenguaje ID ${language_id} no soportado localmente.`);
         }
 
+        // Verificar si la herramienta está disponible
+        try {
+            execSync(toolCheck, { stdio: 'ignore' });
+        } catch (e) {
+            console.warn(`[Local] Herramienta no disponible para language_id ${language_id}`);
+            throw new Error(`Compiler not available locally for language ${language_id}. Please use Judge0 API.`);
+        }
+
         return new Promise((resolve) => {
-            exec(command, { timeout: 15000, maxBuffer: 10 * 1024 * 1024 }, (error, stdout, stderr) => {
+            exec(command, { timeout: 15000, maxBuffer: 10 * 1024 * 1024, shell: '/bin/bash' }, (error, stdout, stderr) => {
                 // Limpiar
                 try { fs.unlinkSync(fileName); } catch(e) {}
                 try { if (binaryName) fs.unlinkSync(binaryName); } catch(e) {}
@@ -365,20 +391,20 @@ app.post('/api/compile', async (req, res) => {
         
         // Mesaje de eroare mai detaliate
         let suggestion = '';
-        if (error.message.includes('fetch')) {
-            suggestion = 'Verifica conexiunea internet. Daca e in reteaua locala, seteaza JUDGE0_API_KEY in .env';
+        if (error.message.includes('fetch') || error.message.includes('Network')) {
+            suggestion = 'Serviciul Judge0 este indisponibil. Verifica conectarea la internet.';
         } else if (error.message.includes('API Key')) {
-            suggestion = 'Verifica JUDGE0_API_KEY in .env. Trebuie sa fie o cheie valida de la RapidAPI.';
+            suggestion = 'Configureaza JUDGE0_API_KEY in .env cu o cheie valida de la RapidAPI.';
+        } else if (error.message.includes('Compiler not available')) {
+            suggestion = 'C/C++ compiler nu este disponibil. Compileaza C++ cod pe Judge0 cu o API key.';
         } else if (error.message.includes('Rate limit')) {
-            suggestion = 'Ai depasit limita de compilari (100/h cu plan gratuit). Asteapta sau upgradeaza la plan RapidAPI Pro.';
-        } else if (error.message.includes('local')) {
-            suggestion = 'Aceasta limba nu e suportata in mod local. Configureaza RapidAPI pentru a compila C/C++.';
+            suggestion = 'Ai depasit limita de compilari. Asteapta sau configureaza RapidAPI Pro plan.';
         }
 
         res.status(500).json({ 
             error: error.message || 'Eroare la compilare',
             suggestion: suggestion,
-            hint: 'Citeste TROUBLESHOOTING.md pentru mai mult ajutor'
+            message: 'Cod nu s-a putut compila. Verifica cod si incearca din nou.'
         });
     }
 });
