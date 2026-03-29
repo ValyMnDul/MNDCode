@@ -39,6 +39,6 @@ Pull requests are welcome! If you'd like to contribute or suggest features, feel
 
 ## Open Sorce
 
-MNDCode is under [MIT LICENCE](https://github.com/valymndul/mndcode/blob/main/LICENSE.md)
+MNDCode is licensed under the [MIT LICENCE](https://github.com/valymndul/mndcode/blob/main/LICENSE.md)
 
 ### Project made in California for Neighgorhood event, hosted by HackClub
