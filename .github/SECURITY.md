@@ -11,4 +11,4 @@ If you discover a potential security issue, please:
 
 We appreciate your help in keeping this project safe and secure!
 
-**Thank you!** 💙
+**Thank you!**
